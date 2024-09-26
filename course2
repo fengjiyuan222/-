@@ -1,0 +1,77 @@
+#include <iostream>
+using namespace std;
+struct numpair
+{
+	int* nums1;
+	int* nums2;
+	int len_l;
+	int len_r;
+};
+int max_nums_l(int nums_l[], int len_l)
+{
+	int l = len_l;
+	int sum = 0;
+	int l_best = nums_l[len_l-1];
+	for (int j = len_l-1; j > 1; j--)
+	{
+		sum = nums_l[j] + sum;
+		if (l_best < sum + nums_l[j - 1])
+		{
+			l--;
+		}
+		cout << sum << "and" << sum + nums_l[j - 1] << endl;
+	}
+	cout <<l<< endl;
+	return l;
+}
+int max_nums_r(int nums_r[],int len_r)
+{
+	int r = 0;
+	int sum = 0;
+	int r_best = nums_r[0];
+	for (int j = 0; j < len_r-1; j++)
+	{
+		sum = nums_r[j] + sum;
+		if (r_best > sum + nums_r[j + 1])
+		{
+			r_best = sum + nums_r[j + 1];
+			r++;
+		}
+		cout << sum << "and" << sum + nums_r[j + 1] << endl;
+	}
+	cout << r << endl;
+	return r+1;
+}
+numpair split_num(int nums[], int len)
+{
+	int halflen = len / 2;
+	int* nums1 = new int[halflen];
+	int* nums2 = new int[len - halflen];
+	for (int i = 0; i < halflen; i++)
+	{
+		nums1[i] = nums[i];
+	}
+	for (int j = 0; j < len - halflen; j++)
+	{
+		nums2[j] = nums[j + halflen];
+	}
+	return { nums1, nums2, halflen, len - halflen };
+}
+void delete_nums(numpair numpair01)
+{
+	delete[] numpair01.nums1;
+	delete[] numpair01.nums2;
+}
+
+int main()
+{
+	int nums[] = { 13,-3,-25,20,-3,-16,-23,18,20,-7,12,-5,-22,15,-4,7 };
+	int len = sizeof(nums) / sizeof(nums[0]);
+	numpair numpair_test = split_num(nums, len);
+	cout << numpair_test.len_l << endl;
+	int num_l=max_nums_l(numpair_test.nums1, numpair_test.len_l);
+	int num_r=max_nums_r(numpair_test.nums2, numpair_test.len_r);
+	int num_all = num_l + num_r;
+	cout << "在第" << num_l-1 << "天买入" << endl;
+	cout << "在第" << num_l+num_r << "天卖出" << endl;
+}
