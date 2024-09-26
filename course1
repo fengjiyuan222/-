@@ -1,0 +1,141 @@
+算法导论中插入排序和分治算法的实现
+插入排序
+#include <iostream>
+#include <string.h>
+using namespace std;
+void insertion_sort(int nums[], int len)
+{
+	int i = 1;
+	int j;
+	int key;
+	for (i; i <len; i++)
+	{
+		key = nums[i];
+		j = i - 1;
+		while (j >= 0 && nums[j] > key)
+		{
+			nums[j + 1] = nums[j];
+			j = j - 1;
+		}
+		nums[j + 1] = key;
+	}
+}
+void print_num(int nums[],int len)
+{
+	for (int i = 0; i <len ; i++)
+	{
+		cout << nums[i] << endl;
+	}
+}
+int main()
+{
+	int nums[] = { 5,2,4,6,1,3 };
+	int nums1[] = { 1,2,3,4,5 };
+	cout << sizeof(nums)/sizeof(nums[0]);
+	int len= sizeof(nums) / sizeof(nums[0]);
+	//int len1= sizeof(nums1) / sizeof(nums1[0]);
+	insertion_sort(nums,len);
+	print_num(nums,len);
+}
+
+
+分治算法
+#include <iostream>
+using namespace std;
+
+struct numpair
+{
+    int* nums1;
+    int* nums2;
+    int len1;
+    int len2;
+};
+
+int* merge(int nums1[], int nums2[], int len1, int len2)
+{
+    int* res_num = new int[len1 + len2];
+    int k = 0;
+    int i = 0, j = 0;
+    while (i < len1 && j < len2)
+    {
+        if (nums1[i] > nums2[j])
+        {
+            res_num[k] = nums2[j];
+            j++;
+            k++;
+        }
+        else
+        {
+            res_num[k] = nums1[i];
+            i++;
+            k++;
+        }
+    }
+    while (i < len1)
+    {
+        res_num[k] = nums1[i];
+        i++;
+        k++;
+    }
+    while (j < len2)
+    {
+        res_num[k] = nums2[j];
+        j++;
+        k++;
+    }
+    return res_num;
+}
+
+void print_num(int nums[], int len)
+{
+    for (int i = 0; i < len; i++)
+    {
+        cout << nums[i] << endl;
+    }
+}
+
+numpair split_num(int nums[], int len)
+{
+    int halflen = len / 2;
+    int* nums1 = new int[halflen];
+    int* nums2 = new int[len - halflen];
+    for (int i = 0; i < halflen; i++)
+    {
+        nums1[i] = nums[i];
+    }
+    for (int j = 0; j < len - halflen; j++)
+    {
+        nums2[j] = nums[j + halflen];
+    }
+    return { nums1, nums2, halflen, len - halflen };
+}
+
+void delete_nums(numpair numpair01)
+{
+    delete[] numpair01.nums1;
+    delete[] numpair01.nums2;
+}
+
+void delete_num(int* nums)
+{
+    delete[] nums;
+}
+
+int main()
+{
+    int nums[] = { 2, 4, 5, 7, 1, 2, 3, 6 };
+    int len = sizeof(nums) / sizeof(nums[0]);
+    numpair numpair_test = split_num(nums, len);
+    int* res_num = merge(numpair_test.nums1, numpair_test.nums2, numpair_test.len1, numpair_test.len2);
+    print_num(res_num, numpair_test.len1 + numpair_test.len2);
+    delete_nums(numpair_test);
+    delete_num(res_num);
+    return 0;
+}
+
+呈现问题
+1.分治算法中
+  在函数insertion_sort和print_num中，通过sizeof(nums)/sizeof(nums[0])来获取数组长度是不正确的。
+  当数组作为函数参数传递时，会退化为指针，sizeof(nums)将得到指针的大小而不是数组的大小。
+2.学习到了用结构体来返回两个数组。
+3.分治算法中merge函数的循环写的不正确，导致丢失最后一项。
