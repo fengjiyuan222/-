@@ -1,0 +1,111 @@
+#include <iostream>
+#include <stack>
+#include <queue>
+
+struct TreeNode {
+    int val;
+    TreeNode* left;
+    TreeNode* right;
+    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+};
+
+void inorderTraversal_f(TreeNode* root) //先序遍历
+{
+    if (root == nullptr) return;
+
+    std::stack<TreeNode*> stack;
+    stack.push(root);
+
+    while (!stack.empty()) {
+        TreeNode* current = stack.top();
+        stack.pop();
+        std::cout << current->val << " "; // 访问根节点
+
+        // 注意：先压右子树，再压左子树，以确保左子树先被访问
+        if (current->right) {
+            stack.push(current->right);
+        }
+        if (current->left) {
+            stack.push(current->left);
+        }
+    }
+}
+void inorderTraversal_m(TreeNode* root) //中序遍历
+{
+    std::stack<TreeNode*> stack;
+    TreeNode* current = root;
+
+    while (current != nullptr || !stack.empty()) {
+        while (current != nullptr) {
+            stack.push(current); // 将当前节点压入栈
+            current = current->left; // 移动到左子树
+        }
+        current = stack.top(); // 获取栈顶元素
+        stack.pop();
+        std::cout << current->val << " "; // 访问根节点
+        current = current->right; // 移动到右子树
+    }
+}
+void postorderTraversal_l(TreeNode* root) //后序遍历
+{
+    if (root == nullptr) return;
+
+    std::stack<TreeNode*> stack;
+    std::stack<TreeNode*> output;
+
+    stack.push(root);
+    while (!stack.empty()) {
+        TreeNode* current = stack.top();
+        stack.pop();
+        output.push(current); // 先记录根节点
+
+        // 注意：先压左子树，再压右子树
+        if (current->left) {
+            stack.push(current->left);
+        }
+        if (current->right) {
+            stack.push(current->right);
+        }
+    }
+
+    // 依次访问记录的节点
+    while (!output.empty()) {
+        std::cout << output.top()->val << " "; // 访问根节点
+        output.pop();
+    }
+}
+void levelOrderTraversal(TreeNode* root) //层次遍历
+{
+    if (root == nullptr) return;
+
+    std::queue<TreeNode*> queue;
+    queue.push(root);
+
+    while (!queue.empty()) {
+        TreeNode* current = queue.front();
+        queue.pop();
+        std::cout << current->val << " "; // 访问当前节点
+
+        // 将左右子节点加入队列
+        if (current->left) {
+            queue.push(current->left);
+        }
+        if (current->right) {
+            queue.push(current->right);
+        }
+    }
+}
+int main() 
+{
+    TreeNode* root = new TreeNode(1);
+    root->right = new TreeNode(2);
+    root->right->left = new TreeNode(3);
+    root->left = new TreeNode(4);
+    root->left->right = new TreeNode(5);
+
+    inorderTraversal_f(root); // 输出: 14523
+    inorderTraversal_m(root);
+    postorderTraversal_l(root);
+    levelOrderTraversal(root);
+    return 0;
+}
